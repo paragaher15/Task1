@@ -1,0 +1,163 @@
+// THE ATM INTERFACE PROGRAM
+
+import java.util.Scanner;
+import java.util.ArrayList;
+
+class Account {
+    private String userId;
+    private String pin;
+    private double balance;
+    private ArrayList<String> transactionHistory;
+
+    public Account(String userId, String pin) {
+        this.userId = userId;
+        this.pin = pin;
+        this.balance = 0.0;
+        this.transactionHistory = new ArrayList<>();
+    }
+
+    public boolean authenticate(String userId, String pin) {
+        return this.userId.equals(userId) && this.pin.equals(pin);
+    }
+
+    public double getBalance() {
+        return balance;
+    }
+
+    public void deposit(double amount) {
+        if (amount > 0) {
+            balance += amount;
+            transactionHistory.add("Deposit: $" + amount);
+        }
+    }
+
+    public void withdraw(double amount) {
+        if (amount > 0 && balance >= amount) {
+            balance -= amount;
+            transactionHistory.add("Withdrawal: $" + amount);
+        }
+    }
+
+    public void transfer(Account recipient, double amount) {
+        if (amount > 0 && balance >= amount) {
+            balance -= amount;
+            recipient.deposit(amount);
+            transactionHistory.add("Transfer to " + recipient.userId + ": $" + amount);
+        }
+    }
+
+    public ArrayList<String> getTransactionHistory() {
+        return transactionHistory;
+    }
+}
+
+ class ATM {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        Account userAccount = new Account("123456", "7890");
+
+        System.out.println("Welcome to the ATM");
+
+
+        System.out.print("Enter User ID: ");
+        String userId = scanner.nextLine();
+        System.out.print("Enter PIN: ");
+        String pin = scanner.nextLine();
+
+        if (userAccount.authenticate(userId, pin)) {
+            System.out.println("Authentication successful.");
+            while (true) {
+                System.out.println("\nSelect an operation:");
+                System.out.println("1. Check Balance");
+                System.out.println("2. Deposit");
+                System.out.println("3. Withdraw");
+                System.out.println("4. Transfer");
+                System.out.println("5. Transaction History");
+                System.out.println("6. Quit");
+                System.out.print("Enter your choice: ");
+                int choice = scanner.nextInt();
+                scanner.nextLine();
+
+                switch (choice) {
+                    case 1:
+                        System.out.println("Balance: $" + userAccount.getBalance());
+                        break;
+                    case 2:
+                        System.out.print("Enter deposit amount: $");
+                        double depositAmount = scanner.nextDouble();
+                        userAccount.deposit(depositAmount);
+                        System.out.println("Deposited $" + depositAmount);
+                        break;
+                    case 3:
+                        System.out.print("Enter withdrawal amount: $");
+                        double withdrawalAmount = scanner.nextDouble();
+                        userAccount.withdraw(withdrawalAmount);
+                        System.out.println("Withdrawn $" + withdrawalAmount);
+                        break;
+                    case 4:
+                        System.out.print("Enter recipient's User ID: ");
+                        String recipientUserId = scanner.nextLine();
+                        System.out.print("Enter transfer amount: $");
+                        double transferAmount = scanner.nextDouble();
+                        Account recipientAccount = new Account(recipientUserId, "");
+                        userAccount.transfer(recipientAccount, transferAmount);
+                        System.out.println("Transferred $" + transferAmount + " to " + recipientUserId);
+                        break;
+                    case 5:
+                        ArrayList<String> history = userAccount.getTransactionHistory();
+                        System.out.println("Transaction History:");
+                        for (String transaction : history) {
+                            System.out.println(transaction);
+                        }
+                        break;
+                    case 6:
+                        System.out.println("Thank you for using the ATM. Goodbye!");
+                        System.exit(0);
+                    default:
+                        System.out.println("Invalid choice. Please select a valid option.");
+                }
+            }
+        } else {
+            System.out.println("Authentication failed. Exiting...");
+        }
+    }
+}
+
+//OUTPUT -->
+Welcome to the ATM
+Enter your user ID: 12345
+Enter your PIN: 6789
+
+ATM MENU
+1. Check Balance
+2. Withdraw
+3. Deposit
+4. Quit
+Choose an option (1/2/3/4): 1
+Your balance is: $1000
+
+ATM MENU
+1. Check Balance
+2. Withdraw
+3. Deposit
+4. Quit
+Choose an option (1/2/3/4): 2
+Enter the amount to withdraw: $500
+Withdrawal successful. Your new balance is: $500
+
+ATM MENU
+1. Check Balance
+2. Withdraw
+3. Deposit
+4. Quit
+Choose an option (1/2/3/4): 3
+Enter the amount to deposit: $200
+Deposit successful. Your new balance is: $700
+
+ATM MENU
+1. Check Balance
+2. Withdraw
+3. Deposit
+4. Quit
+Choose an option (1/2/3/4): 4
+Thank you for using the ATM. Goodbye!
